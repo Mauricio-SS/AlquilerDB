@@ -27,7 +27,7 @@ foreign key (RFCAval) references aval
 
 create table autos(
 placa varchar(10) not null,
-garage int not null,
+garage varchar(20) not null,
 Marca varchar(20),
 Modelo varchar(20),
 color varchar(10),
@@ -50,7 +50,7 @@ create table ReservacionAuto(
 
 IdReservacion int not null,
 Placa varchar(10) not null,
-Garage int not null
+Garage varchar(20) not null
 primary key (IdReservacion,Placa),
 foreign key (IdReservacion) references Reservacion,
 foreign key (Placa,Garage) references Autos
@@ -64,7 +64,7 @@ IdReservacion int not null,
 foreign key (IdReservacion) references Reservacion
 )
 
-
+/*
 --insercion de datos de prueba 
 --aval
 insert into Aval values ('abc123','Mau','Sandoval','calle 9','5512415820')
@@ -100,4 +100,5 @@ insert into ReservacionAuto values (4,'mar3030',1)
 insert into Agencia values(1,'surman',1)
 insert into Agencia values(1,'surman',2)
 insert into Agencia values(2,'AWM',4)
+*/ 
 
