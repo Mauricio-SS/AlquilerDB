@@ -57,10 +57,12 @@ foreign key (Placa,Garage) references Autos
 )
 
 Create table Agencia(
-
 IdAgencia int not null,
 NombreAgencia varchar(20) not null,
+placa varchar(10) not null,
+garage varchar(20) not null,
 IdReservacion int not null,
+foreign key (Placa,garage) references autos,
 foreign key (IdReservacion) references Reservacion
 )
 
@@ -101,4 +103,5 @@ insert into Agencia values(1,'surman',1)
 insert into Agencia values(1,'surman',2)
 insert into Agencia values(2,'AWM',4)
 */ 
+
 
