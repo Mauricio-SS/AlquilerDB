@@ -382,3 +382,45 @@ where a.Modelo = '2005'
 -- Listar todas las reservaciones de las agencias norte y oeste 
 
 select * from reservacion where IdAgencia = 1 or IdAgencia = 4 order by IdAgencia
+
+-- obtener los datos de los clientes que han reservado autos del garage azul 
+
+select c.* 
+from cliente c 
+join Reservacion r on c.RFCCliente = r.RFCCliente
+join ReservacionAuto ra on r.IdReservacion = ra.IdReservacion
+join autos a on ra.Placa = a.placa
+where a.IdAgencia = 1
+
+-- seleccionar las reservaciones de pedro juarez en la agencia sur 
+-- Nota: se cambió a norte porque no tiene reservaciones en la agencia sur 
+
+select * from Reservacion where IdAgencia = 1 and RFCCliente = 'DDDDDDDD'
+
+--Mostrar el nombre de la agencia donde gabriela aguirre a rentado autos chevrolet 
+
+select c.nombre,c.Apellido, ag.nombreAgencia,r.*, a.Marca as carro from Agencia ag
+join autos a on ag.IdAgencia = a.IdAgencia
+join ReservacionAuto ra on ra.Placa = a.placa
+join Reservacion r on r.IdReservacion = ra.IdReservacion
+join cliente c on c.RFCCliente = r.RFCCliente
+where r.RFCCliente = 'AAAAAAAA' and a.Marca = 'Chevrolet'
+
+-- Mostrar el nombre del Aval en las reservaciones hechas por eduardo rivas cuando dichas reservaciones incluyen autos BMW 
+-- Nota se cambió a Chevrolet porque no hay reservaciones que incluyan un Chevrolet 
+select av.nombre as NombreAval, av.Apellido as ApellidoAval, c.nombre as NombreCliente, c.apellido as ApellidoCliente, r.*,a.marca as carro
+from aval av
+join cliente c on c.RFCAval = av.RFCAval
+join Reservacion r on r.RFCCliente = c.RFCCliente
+join ReservacionAuto ra on ra.IdReservacion = r.IdReservacion
+join autos a on ra.Placa = a.placa
+where c.RFCCliente='MMMMMMMM' and a.Marca='Chevrolet'
+
+-- Mostrar el nombre del cliente y el nombre de su aval para todas las reservaciones que involucran autos en el garage azul 
+
+select av.nombre as aval , c.nombre as cliente , r.* , ag.garage
+from aval av
+join cliente c on c.RFCAval = av.RFCAval
+join Reservacion r on r.RFCCliente = c.RFCCliente
+join Agencia ag on ag.IdAgencia  = r.IdAgencia
+where ag.IdAgencia = 1
