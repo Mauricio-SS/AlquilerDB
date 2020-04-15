@@ -356,3 +356,29 @@ insert into Reservacion (FecInicio,FecFin,Gasolina,precioAlquiler,precioTotal,es
 values ('2020-5-15','2020-6-10','60 litros',5000,5600,'no entregado','JJJJJJJJ',2)
 
 insert into ReservacionAuto values(31,'678UZA')
+
+--consultas 
+--Nombre y apellido de los clinetes de linda vista 
+
+select nombre, apellido from cliente where direccion = 'linda vista'
+
+--mostrar las placas, marca, modelo y color de los autos del garage rojo 
+
+select placa, marca, modelo, color from autos where IdAgencia = 2
+
+-- mostrar las placas, marca, modelo y color de la agencia "este"
+
+select placa, marca, modelo, color from autos where IdAgencia = 3
+
+-- Obtener los datos de los clientes que han reservado autos 2005 
+
+select c.* 
+from cliente c 
+join Reservacion r on c.RFCCliente = r.RFCCliente
+join ReservacionAuto ra on r.IdReservacion = ra.IdReservacion
+join autos a on ra.Placa = a.placa
+where a.Modelo = '2005'
+
+-- Listar todas las reservaciones de las agencias norte y oeste 
+
+select * from reservacion where IdAgencia = 1 or IdAgencia = 4 order by IdAgencia
