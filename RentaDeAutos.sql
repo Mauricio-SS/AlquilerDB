@@ -448,3 +448,34 @@ WHERE Marca NOT IN (select a.marca from autos a
 join Agencia b on a.IdAgencia=b.IdAgencia
 where a.IdAgencia = 1)
 
+-- Creación de Vistas 
+
+--reservacionesPorCliente
+create view reservacionesPorCliente as 
+select r.IdReservacion reservacion , r.fecInicio fecha , concat(c.nombre,c.Apellido) cliente , r.precioTotal 'Precio total'
+from Reservacion r
+join cliente c on c.RFCCliente = r.RFCCliente
+
+select * from reservacionesPorCliente
+
+----Reservaciones por agencia 
+ create view autosPorAgencia as 
+ select a.placa, a.marca,a.modelo, ag.nombreAgencia
+ from autos a
+ join Agencia ag 
+ on a.IdAgencia = ag.IdAgencia
+ 
+ --clientes corporativos 
+ create view clientesCorporativos as 
+ select distinct c.nombre, c.apellido, c.telefono 
+ from cliente c 
+ join Reservacion r 
+ on r.RFCCliente = c.RFCCliente
+ where r.RFCCliente in (
+ select RFCCliente from Reservacion
+ group by RFCCliente
+ having count(*) > 1 )
+
+ select * from clientesCorporativos
+
+ 
