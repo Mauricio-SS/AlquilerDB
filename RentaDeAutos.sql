@@ -353,9 +353,11 @@ values ('2020-5-10','2020-6-10','60 litros',5000,5600,'no entregado','LLLLLLLL',
 insert into ReservacionAuto values(30,'567PMX')
 
 insert into Reservacion (FecInicio,FecFin,Gasolina,precioAlquiler,precioTotal,estado,RFCCliente,IdAgencia)
-values ('2020-5-15','2020-6-10','60 litros',5000,5600,'no entregado','JJJJJJJJ',2)
+values ('2020-6-15','2020-7-10','60 litros',5000,5600,'no entregado','JJJJJJJJ',2)
 
-insert into ReservacionAuto values(31,'678UZA')
+insert into ReservacionAuto values(40,'678UZA')
+
+
 
 --consultas 
 --Nombre y apellido de los clinetes de linda vista 
@@ -464,6 +466,8 @@ select * from reservacionesPorCliente
  from autos a
  join Agencia ag 
  on a.IdAgencia = ag.IdAgencia
+
+ select * from autosPorAgencia
  
  --clientes corporativos 
  create view clientesCorporativos as 
@@ -478,4 +482,35 @@ select * from reservacionesPorCliente
 
  select * from clientesCorporativos
 
- 
+ -- procedimiento almacenado 
+  alter procedure CreaReservacion (@RFC varchar(15), @nombre varchar(30), @apellido varchar(30), @direccion varchar(60),
+									@telefono varchar(20), @aval varchar(15), @FecInicio date, @FecFin date, @Gasolina varchar(20),
+									@precioAlquiler money, @precioTotal money, @estado varchar (12), @agencia int, @placa varchar(10))
+as
+begin 
+	begin transaction 
+		begin try
+			if not exists(select RFCCliente from cliente where RFCCliente = @RFC )
+			begin 
+				insert into cliente values (@RFC, @nombre , @apellido, @direccion,@telefono, @aval)
+			end 
+
+			insert into Reservacion (FecInicio,FecFin,Gasolina,precioAlquiler,precioTotal,estado,RFCCliente,IdAgencia)
+			values (@FecInicio,@FecFin,@Gasolina,@precioAlquiler,@precioTotal,@estado,@RFC,@agencia)
+
+			declare @reserva int
+			set @reserva = @@IDENTITY
+			insert into ReservacionAuto (IdReservacion,Placa) values (@reserva, @placa)
+			commit
+		end try
+	begin catch
+		rollback
+	end catch
+end 
+
+
+exec CreaReservacion 'CCCCCCCC','mau','salinas','Ecatepec','4102463048','PPPPPPPP',
+					 '2020-5-7','2020-6-7','30 litros',3000,3300,'entregado',4, '567PMX'
+
+
+
