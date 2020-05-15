@@ -483,7 +483,7 @@ select * from reservacionesPorCliente
  select * from clientesCorporativos
 
  -- procedimiento almacenado 
-  alter procedure CreaReservacion (@RFC varchar(15), @nombre varchar(30), @apellido varchar(30), @direccion varchar(60),
+  create procedure CreaReservacion (@RFC varchar(15), @nombre varchar(30), @apellido varchar(30), @direccion varchar(60),
 									@telefono varchar(20), @aval varchar(15), @FecInicio date, @FecFin date, @Gasolina varchar(20),
 									@precioAlquiler money, @precioTotal money, @estado varchar (12), @agencia int, @placa varchar(10))
 as
@@ -513,4 +513,51 @@ exec CreaReservacion 'CCCCCCCC','mau','salinas','Ecatepec','4102463048','PPPPPPP
 					 '2020-5-7','2020-6-7','30 litros',3000,3300,'entregado',4, '567PMX'
 
 
+
+-- procedimientos almacenados y triggers 
+
+--inserta cliente
+
+alter procedure creaCliente (@RFC varchar(15), @nombre varchar(30), @apellido varchar(30), @direccion varchar(60),
+							  @telefono varchar(20), @aval varchar(15))
+as 
+begin 
+	begin transaction
+	begin try
+		if not exists(select RFCCliente from cliente where RFCCliente = @RFC )
+			begin 
+				insert into cliente values (@RFC, @nombre , @apellido, @direccion,@telefono, @aval)
+			end 
+			commit 
+	end try
+	begin catch
+		rollback
+	end catch
+end 
+
+exec creaCliente 'IIIIIIII','Tere','Sandoval','impulsora','5520321485','DDDDDDDD' 
+
+select * from cliente
+
+--para inertar un auto nuevo 
+
+create procedure creaAuto (@placa varchar(10),@Marca varchar(20),@Modelo varchar(20),@color varchar(10),@IdAgencia int)
+as 
+begin
+	begin transaction
+		begin try
+			if not exists(select placa from autos where placa = @placa)
+			begin 
+				insert into autos values (@placa,@marca,@Modelo,@color,@IdAgencia)
+			end
+			commit
+		end try 
+		begin catch 
+		rollback
+		end catch
+end 
+
+exec creaAuto '154HDD', 'Ford', 'Focus','Gris',2
+
+select * from autos
 
