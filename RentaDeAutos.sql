@@ -483,7 +483,7 @@ select * from reservacionesPorCliente
  select * from clientesCorporativos
 
  -- procedimiento almacenado 
-  alter procedure CreaReservacion (@RFC varchar(15), @nombre varchar(30), @apellido varchar(30), @direccion varchar(60),
+  create procedure CreaReservacion (@RFC varchar(15), @nombre varchar(30), @apellido varchar(30), @direccion varchar(60),
 									@telefono varchar(20), @aval varchar(15), @FecInicio date, @FecFin date, @Gasolina varchar(20),
 									@precioAlquiler money, @precioTotal money, @estado varchar (12), @agencia int, @placa varchar(10))
 as
@@ -514,3 +514,82 @@ exec CreaReservacion 'CCCCCCCC','mau','salinas','Ecatepec','4102463048','PPPPPPP
 
 
 
+-- procedimientos almacenados y triggers 
+
+--inserta cliente
+
+alter procedure creaCliente (@RFC varchar(15), @nombre varchar(30), @apellido varchar(30), @direccion varchar(60),
+							  @telefono varchar(20), @aval varchar(15))
+as 
+begin 
+	begin transaction
+	begin try
+		if not exists(select RFCCliente from cliente where RFCCliente = @RFC )
+			begin 
+				insert into cliente values (@RFC, @nombre , @apellido, @direccion,@telefono, @aval)
+			end 
+			commit 
+	end try
+	begin catch
+		rollback
+	end catch
+end 
+
+exec creaCliente 'IIIIIIII','Tere','Sandoval','impulsora','5520321485','DDDDDDDD' 
+
+select * from cliente
+
+--para inertar un auto nuevo 
+
+create procedure creaAuto (@placa varchar(10),@Marca varchar(20),@Modelo varchar(20),@color varchar(10),@IdAgencia int)
+as 
+begin
+	begin transaction
+		begin try
+			if not exists(select placa from autos where placa = @placa)
+			begin 
+				insert into autos values (@placa,@marca,@Modelo,@color,@IdAgencia)
+			end
+			commit
+		end try 
+		begin catch 
+		rollback
+		end catch
+end 
+
+exec creaAuto '963DEV', 'Lamborghini', '2020','Azul',4
+
+select * from autos
+
+-- agregar columna a tabla agencia 
+
+alter table Agencia add cantidadAutos int null
+
+select * from Agencia 
+
+-- triger para actualizar cantidad de autos 
+
+create trigger cantidadAutos 
+on autos after insert 
+as 
+begin 
+	begin transaction 
+	begin try
+		declare @agencia int 
+		select @agencia = idAgencia from inserted
+
+		declare @cuenta int
+		select @cuenta = count(placa) from autos where IdAgencia = @agencia 
+
+		update Agencia set cantidadAutos = @cuenta where IdAgencia = @agencia
+		commit
+	end try 
+	begin catch 
+		rollback 
+	end catch
+end
+
+
+select * from Agencia
+
+select * from autos where IdAgencia = 1
