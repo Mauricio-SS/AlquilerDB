@@ -557,7 +557,39 @@ begin
 		end catch
 end 
 
-exec creaAuto '154HDD', 'Ford', 'Focus','Gris',2
+exec creaAuto '963DEV', 'Lamborghini', '2020','Azul',4
 
 select * from autos
 
+-- agregar columna a tabla agencia 
+
+alter table Agencia add cantidadAutos int null
+
+select * from Agencia 
+
+-- triger para actualizar cantidad de autos 
+
+create trigger cantidadAutos 
+on autos after insert 
+as 
+begin 
+	begin transaction 
+	begin try
+		declare @agencia int 
+		select @agencia = idAgencia from inserted
+
+		declare @cuenta int
+		select @cuenta = count(placa) from autos where IdAgencia = @agencia 
+
+		update Agencia set cantidadAutos = @cuenta where IdAgencia = @agencia
+		commit
+	end try 
+	begin catch 
+		rollback 
+	end catch
+end
+
+
+select * from Agencia
+
+select * from autos where IdAgencia = 1
